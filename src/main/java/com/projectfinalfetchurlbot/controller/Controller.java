@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.projectfinalfetchurlbot.dao.Redis;
 import com.projectfinalfetchurlbot.function.DateTimes;
+import com.projectfinalfetchurlbot.function.Query;
 import com.projectfinalfetchurlbot.service.ServiceTescolotus;
 import com.projectfinalfetchurlbot.service.ServiceWeb;
 
@@ -26,23 +27,50 @@ public class Controller {
     
     @Autowired
     private Redis rd;
+    
+    @Autowired
+    private Query q;
 
     @Scheduled(cron = "#{@cronExpression_1}") 
-    public void runTask_1() {
-        System.out.println(dateTimes.interDateTime() + " : web scrapping runTask_1 start");
-        serviceWeb.start();
+    public void runTask_1() {   	
+        System.out.println(dateTimes.interDateTime() + " : fetch url bot runTask_1 start");        
+        String db1 = q.StrExcuteQuery("SELECT Status FROM Switch_database WHERE Name = 'db_1';");
+        // เช็คสถานะการสลับ database ว่าให้ db ไหนทำงาน
+        if(db1.matches("1")) {
+        	task("db_1");
+        }
+            
+        System.out.println(dateTimes.interDateTime() + " : fetch url bot runTask_1 stop");
+    }
+
+    @Scheduled(cron = "#{@cronExpression_2}") 
+    public void runTask_2() {
+    	System.out.println(dateTimes.interDateTime() + " : fetch url bot runTask_2 start");
+        String db2 = q.StrExcuteQuery("SELECT Status FROM Switch_database WHERE Name = 'db_2';");
+        if(db2.matches("1")) {
+        	task("db_2");
+        }
+        System.out.println(dateTimes.interDateTime() + " : fetch url bot runTask_2 stop");
+    }
+    
+    public void task(String dbName) {
+    	serviceWeb.start();
         Jedis redis = rd.connect();
         boolean checkStartUrl = true;
         boolean checkCategorytUrl = true;
+        // หา url เริ่มต้นจาก db
         while (checkStartUrl) {
         	String obj = redis.rpop("startUrl");
         	if (obj != null) {
+            	JSONObject json = new JSONObject(obj);
+            	json.put("database", dbName);
+            	obj = json.toString();
         		serviceTescolotus.classifyCategoryUrl(obj);
             } else {
             	checkStartUrl = false;
             }
         }
-        
+        // หาประเภทของ url
         while (checkCategorytUrl) {
         	String obj = redis.rpop("categorytUrl");
         	if (obj != null) {
@@ -51,13 +79,5 @@ public class Controller {
             	checkCategorytUrl = false;
             }
         }
-              
-        System.out.println(dateTimes.interDateTime() + " : web scrapping runTask_1 stop");
     }
-
-    @Scheduled(cron = "#{@cronExpression_2}") 
-    public void runTask_2() {
-
-    }
-
 }

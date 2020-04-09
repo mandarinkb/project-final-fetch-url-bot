@@ -49,6 +49,7 @@ public class ServiceTescolotusImpl implements ServiceTescolotus{
             }
     	}catch(Exception e) {
     		System.out.println(e.getMessage());
+    		redis.rpush("startUrl", obj); //กรณี error ให้ยัดลง redis ที่รับมาอีกรอบ
     	}
 	}
 
@@ -84,6 +85,7 @@ public class ServiceTescolotusImpl implements ServiceTescolotus{
         	}
     	}catch(Exception e) {
     		System.out.println(e.getMessage());
+    		redis.rpush("categorytUrl", obj); //กรณี error ให้ยัดลง redis ที่รับมาอีกรอบ
     	}
 	}
 
