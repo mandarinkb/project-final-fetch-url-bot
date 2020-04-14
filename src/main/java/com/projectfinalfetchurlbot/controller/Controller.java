@@ -9,7 +9,6 @@ import com.projectfinalfetchurlbot.dao.Redis;
 import com.projectfinalfetchurlbot.function.DateTimes;
 import com.projectfinalfetchurlbot.function.Query;
 import com.projectfinalfetchurlbot.service.ServiceTescolotus;
-import com.projectfinalfetchurlbot.service.ServiceWeb;
 
 import redis.clients.jedis.Jedis;
 
@@ -20,9 +19,6 @@ public class Controller {
     private DateTimes dateTimes;
 
     @Autowired
-    private ServiceWeb serviceWeb;
-
-    @Autowired
     private ServiceTescolotus serviceTescolotus;
     
     @Autowired
@@ -31,30 +27,31 @@ public class Controller {
     @Autowired
     private Query q;
 
-    @Scheduled(cron = "#{@cronExpression_1}") 
+    //@Scheduled(cron = "#{@cronExpression_1}") 
+    @Scheduled(cron = "0 0/1 * 1/1 * ?") // เรียกใช้งานทุกๆ 1 นาที
     public void runTask_1() {   	
-        System.out.println(dateTimes.interDateTime() + " : fetch url bot runTask_1 start");        
+        System.out.println(dateTimes.interDateTime() + " : fetch url bot db_1 start");        
         String db1 = q.StrExcuteQuery("SELECT Status FROM Switch_database WHERE Name = 'db_1';");
         // เช็คสถานะการสลับ database ว่าให้ db ไหนทำงาน
         if(db1.matches("1")) {
         	task("db_1");
         }
             
-        System.out.println(dateTimes.interDateTime() + " : fetch url bot runTask_1 stop");
+        System.out.println(dateTimes.interDateTime() + " : fetch url bot db_1 stop");
     }
 
-    @Scheduled(cron = "#{@cronExpression_2}") 
+    //@Scheduled(cron = "#{@cronExpression_2}") 
+    @Scheduled(cron = "0 0/1 * 1/1 * ?") // เรียกใช้งานทุกๆ 1 นาที
     public void runTask_2() {
-    	System.out.println(dateTimes.interDateTime() + " : fetch url bot runTask_2 start");
+    	System.out.println(dateTimes.interDateTime() + " : fetch url bot db_2 start");
         String db2 = q.StrExcuteQuery("SELECT Status FROM Switch_database WHERE Name = 'db_2';");
         if(db2.matches("1")) {
         	task("db_2");
         }
-        System.out.println(dateTimes.interDateTime() + " : fetch url bot runTask_2 stop");
+        System.out.println(dateTimes.interDateTime() + " : fetch url bot db_2 stop");
     }
     
     public void task(String dbName) {
-    	serviceWeb.start();
         Jedis redis = rd.connect();
         boolean checkStartUrl = true;
         boolean checkCategorytUrl = true;
