@@ -31,9 +31,10 @@ public class Controller {
     @Scheduled(cron = "0 0/1 * 1/1 * ?") // เรียกใช้งานทุกๆ 1 นาที
     public void runTask_1() {   	
         System.out.println(dateTimes.interDateTime() + " : fetch url bot db_1 start");        
-        String db1 = q.StrExcuteQuery("SELECT Status FROM Switch_database WHERE Name = 'db_1';");
+        String db1 = q.StrExcuteQuery("select DATABASE_STATUS from SWITCH_DATABASE where DATABASE_NAME = 'db_1';");
+        String str = "1";
         // เช็คสถานะการสลับ database ว่าให้ db ไหนทำงาน
-        if(db1.matches("1")) {
+        if(db1.equals(str)) {
         	task("db_1");
         }
             
@@ -44,8 +45,9 @@ public class Controller {
     @Scheduled(cron = "0 0/1 * 1/1 * ?") // เรียกใช้งานทุกๆ 1 นาที
     public void runTask_2() {
     	System.out.println(dateTimes.interDateTime() + " : fetch url bot db_2 start");
-        String db2 = q.StrExcuteQuery("SELECT Status FROM Switch_database WHERE Name = 'db_2';");
-        if(db2.matches("1")) {
+        String db2 = q.StrExcuteQuery("select DATABASE_STATUS from SWITCH_DATABASE where DATABASE_NAME = 'db_2';");
+        String str = "1";
+        if(db2.equals(str)) {
         	task("db_2");
         }
         System.out.println(dateTimes.interDateTime() + " : fetch url bot db_2 stop");
