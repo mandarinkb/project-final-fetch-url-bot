@@ -2,6 +2,7 @@ package com.projectfinalfetchurlbot.controller;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +15,12 @@ import redis.clients.jedis.Jedis;
 
 @Component
 public class Controller {
-
+    @Value("${db_1}")
+    private String db_1;
+    
+    @Value("${db_2}")
+    private String db_2;
+    
     @Autowired
     private DateTimes dateTimes;
 
@@ -31,11 +37,11 @@ public class Controller {
     @Scheduled(cron = "0 0/1 * 1/1 * ?") // เรียกใช้งานทุกๆ 1 นาที
     public void runTask_1() {   	
         System.out.println(dateTimes.interDateTime() + " : fetch url bot db_1 start");        
-        String db1 = q.StrExcuteQuery("select DATABASE_STATUS from SWITCH_DATABASE where DATABASE_NAME = 'db_1';");
-        String str = "1";
+        String db1 = q.StrExcuteQuery("select DATABASE_STATUS from SWITCH_DATABASE where DATABASE_NAME = '"+db_1+"';");
+        String strStatus = "1";
         // เช็คสถานะการสลับ database ว่าให้ db ไหนทำงาน
-        if(db1.equals(str)) {
-        	task("db_1");
+        if(db1.equals(strStatus)) {
+        	task(db_1);
         }
             
         System.out.println(dateTimes.interDateTime() + " : fetch url bot db_1 stop");
@@ -45,10 +51,10 @@ public class Controller {
     @Scheduled(cron = "0 0/1 * 1/1 * ?") // เรียกใช้งานทุกๆ 1 นาที
     public void runTask_2() {
     	System.out.println(dateTimes.interDateTime() + " : fetch url bot db_2 start");
-        String db2 = q.StrExcuteQuery("select DATABASE_STATUS from SWITCH_DATABASE where DATABASE_NAME = 'db_2';");
-        String str = "1";
-        if(db2.equals(str)) {
-        	task("db_2");
+        String db2 = q.StrExcuteQuery("select DATABASE_STATUS from SWITCH_DATABASE where DATABASE_NAME = '"+db_2+"';");
+        String strStatus = "1";
+        if(db2.equals(strStatus)) {
+        	task(db_2);
         }
         System.out.println(dateTimes.interDateTime() + " : fetch url bot db_2 stop");
     }
@@ -71,7 +77,7 @@ public class Controller {
         }
         // หาประเภทของ url
         while (checkCategorytUrl) {
-        	String obj = redis.rpop("categorytUrl");
+        	String obj = redis.rpop("categoryUrl");
         	if (obj != null) {
         		serviceTescolotus.categoryUrlDetail(obj);
             } else {

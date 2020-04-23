@@ -43,7 +43,7 @@ public class ServiceTescolotusImpl implements ServiceTescolotus{
                     
                     json.put("category",category);
                     json.put("url",categoryUrl);
-                    redis.rpush("categorytUrl", json.toString());
+                    redis.rpush("categoryUrl", json.toString());
             	}
 
             }
