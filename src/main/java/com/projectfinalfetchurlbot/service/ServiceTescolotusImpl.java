@@ -10,11 +10,15 @@ import org.springframework.stereotype.Service;
 
 import com.projectfinalfetchurlbot.dao.Redis;
 import com.projectfinalfetchurlbot.function.DateTimes;
+import com.projectfinalfetchurlbot.function.Elasticsearch;
 
 import redis.clients.jedis.Jedis;
 
 @Service
 public class ServiceTescolotusImpl implements ServiceTescolotus{
+	@Autowired
+	private Elasticsearch els;
+	
     @Autowired
     private Redis rd;  
 
@@ -32,7 +36,8 @@ public class ServiceTescolotusImpl implements ServiceTescolotus{
             Elements eles = doc.select(".list-item.list-item-large");
             for (Element ele : eles) {
             	String category = ele.select(".name").html();
-            	if(!category.matches("ดูทั้งหมด")) {
+            	// ตัดหมวดหมู่ดังกล่าวออก
+            	if(!category.matches("ดูทั้งหมด") && !category.matches("แผนกเสื้อผ้า") && !category.matches("สินค้าอื่นๆ")) {
                     Element eleTitle = ele.select("a").first();
                     //String strUrl = eleTitle.attr("href");                    
                     String strUrl = eleTitle.absUrl("href");
@@ -41,7 +46,9 @@ public class ServiceTescolotusImpl implements ServiceTescolotus{
                     category = category.replace(",", "");
                     category = category.replace("&amp; ", "");
                     
-                    json.put("category",category);
+                    String newCategory = els.getCategory(category); // แปลง category ใหม่
+                    
+                    json.put("category",newCategory);
                     json.put("url",categoryUrl);
                     redis.rpush("categoryUrl", json.toString());
             	}
