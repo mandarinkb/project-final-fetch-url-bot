@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import com.projectfinalfetchurlbot.dao.Redis;
 import com.projectfinalfetchurlbot.function.DateTimes;
 import com.projectfinalfetchurlbot.function.Query;
+import com.projectfinalfetchurlbot.service.ServiceLazada;
 import com.projectfinalfetchurlbot.service.ServiceTescolotus;
 
 import redis.clients.jedis.Jedis;
@@ -26,6 +27,9 @@ public class Controller {
 
     @Autowired
     private ServiceTescolotus serviceTescolotus;
+    
+    @Autowired
+    private ServiceLazada serviceLazada;
     
     @Autowired
     private Redis rd;
@@ -68,9 +72,25 @@ public class Controller {
         	String obj = redis.rpop("startUrl");
         	if (obj != null) {
             	JSONObject json = new JSONObject(obj);
-            	json.put("database", dbName);
-            	obj = json.toString();
-        		serviceTescolotus.classifyCategoryUrl(obj);
+            	json.put("database", dbName); // บันทึกชื่อ database ไว้
+            	
+                String webName = json.getString("web_name");
+            	//obj = json.toString();
+            	
+                switch(webName) 
+                { 
+                    case "tescolotus": 
+                    	serviceTescolotus.classifyCategoryUrl(json.toString());
+                        break; 
+                    case "lazada": 
+                    	serviceLazada.classifyCategoryUrl(json.toString());
+                        break; 
+                    case "three": 
+                        System.out.println("three"); 
+                        break; 
+                    default: 
+                        System.out.println("no match"); 
+                } 
             } else {
             	checkStartUrl = false;
             }
@@ -79,7 +99,24 @@ public class Controller {
         while (checkCategorytUrl) {
         	String obj = redis.rpop("categoryUrl");
         	if (obj != null) {
-        		serviceTescolotus.categoryUrlDetail(obj);
+        		JSONObject json = new JSONObject(obj);
+        		String webName = json.getString("web_name");
+        		
+                switch(webName) 
+                { 
+                    case "tescolotus": 
+                    	serviceTescolotus.categoryUrlDetail(json.toString());
+                        break; 
+                    case "two": 
+                        System.out.println("two"); 
+                        break; 
+                    case "three": 
+                        System.out.println("three"); 
+                        break; 
+                    default: 
+                        System.out.println("no match"); 
+                } 
+        		
             } else {
             	checkCategorytUrl = false;
             }
