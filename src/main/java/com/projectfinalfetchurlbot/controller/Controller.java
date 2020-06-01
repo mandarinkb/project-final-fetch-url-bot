@@ -64,62 +64,68 @@ public class Controller {
     }
     
     public void task(String dbName) {
-        Jedis redis = rd.connect();
-        boolean checkStartUrl = true;
-        boolean checkCategorytUrl = true;
-        // หา url เริ่มต้นจาก db
-        while (checkStartUrl) {
-        	String obj = redis.rpop("startUrl");
-        	if (obj != null) {
-            	JSONObject json = new JSONObject(obj);
-            	json.put("database", dbName); // บันทึกชื่อ database ไว้
-            	
-                String webName = json.getString("web_name");
-            	//obj = json.toString();
-            	
-                switch(webName) 
-                { 
-                    case "tescolotus": 
-                    	serviceTescolotus.classifyCategoryUrl(json.toString());
-                        break; 
-                    case "lazada": 
-                    	serviceLazada.classifyCategoryUrl(json.toString());
-                        break; 
-                    case "three": 
-                        System.out.println("three"); 
-                        break; 
-                    default: 
-                        System.out.println("no match"); 
-                } 
-            } else {
-            	checkStartUrl = false;
+    	try {
+            Jedis redis = rd.connect();
+            boolean checkStartUrl = true;
+            boolean checkCategorytUrl = true;
+            // หา url เริ่มต้นจาก db
+            while (checkStartUrl) {
+            	String obj = redis.rpop("startUrl");
+            	if (obj != null) {
+                	JSONObject json = new JSONObject(obj);
+                	json.put("database", dbName); // บันทึกชื่อ database ไว้
+                	
+                    String webName = json.getString("web_name");
+                	//obj = json.toString();
+                	
+                    switch(webName) 
+                    { 
+                        case "tescolotus": 
+                        	serviceTescolotus.classifyCategoryUrl(json.toString());
+                            break; 
+                        case "lazada": 
+                        	serviceLazada.classifyCategoryUrl(json.toString());
+                            break; 
+                        case "three": 
+                            System.out.println("three"); 
+                            break; 
+                        default: 
+                            System.out.println("no match"); 
+                    } 
+                } else {
+                	checkStartUrl = false;
+                }
             }
-        }
-        // หาประเภทของ url
-        while (checkCategorytUrl) {
-        	String obj = redis.rpop("categoryUrl");
-        	if (obj != null) {
-        		JSONObject json = new JSONObject(obj);
-        		String webName = json.getString("web_name");
-        		
-                switch(webName) 
-                { 
-                    case "tescolotus": 
-                    	serviceTescolotus.categoryUrlDetail(json.toString());
-                        break; 
-                    case "two": 
-                        System.out.println("two"); 
-                        break; 
-                    case "three": 
-                        System.out.println("three"); 
-                        break; 
-                    default: 
-                        System.out.println("no match"); 
-                } 
-        		
-            } else {
-            	checkCategorytUrl = false;
+            // หาประเภทของ url
+            while (checkCategorytUrl) {
+            	String obj = redis.rpop("categoryUrl");
+            	if (obj != null) {
+            		JSONObject json = new JSONObject(obj);
+            		String webName = json.getString("web_name");
+            		
+                    switch(webName) 
+                    { 
+                        case "tescolotus": 
+                        	serviceTescolotus.categoryUrlDetail(json.toString());
+                            break; 
+                        case "two": 
+                            System.out.println("two"); 
+                            break; 
+                        case "three": 
+                            System.out.println("three"); 
+                            break; 
+                        default: 
+                            System.out.println("no match"); 
+                    } 
+            		
+                } else {
+                	checkCategorytUrl = false;
+                }
             }
-        }
+    		
+    		
+    	}catch(Exception e) {
+    		System.out.println(e.getMessage());
+    	}  
     }
 }
