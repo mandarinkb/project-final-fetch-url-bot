@@ -10,6 +10,7 @@ import com.projectfinalfetchurlbot.dao.Redis;
 import com.projectfinalfetchurlbot.function.DateTimes;
 import com.projectfinalfetchurlbot.function.Query;
 import com.projectfinalfetchurlbot.service.ServiceLazada;
+import com.projectfinalfetchurlbot.service.ServiceMakroclick;
 import com.projectfinalfetchurlbot.service.ServiceTescolotus;
 
 import redis.clients.jedis.Jedis;
@@ -26,16 +27,20 @@ public class Controller {
     private DateTimes dateTimes;
 
     @Autowired
-    private ServiceTescolotus serviceTescolotus;
-    
-    @Autowired
-    private ServiceLazada serviceLazada;
-    
-    @Autowired
     private Redis rd;
     
     @Autowired
     private Query q;
+    
+    @Autowired
+    private ServiceTescolotus tescolotus;
+    
+    @Autowired
+    private ServiceLazada lazada;
+    
+    @Autowired
+    private ServiceMakroclick makroclick;
+    
 
     //@Scheduled(cron = "#{@cronExpression_1}") 
     @Scheduled(cron = "0 0/1 * 1/1 * ?") // เรียกใช้งานทุกๆ 1 นาที
@@ -81,13 +86,13 @@ public class Controller {
                     switch(webName) 
                     { 
                         case "tescolotus": 
-                        	serviceTescolotus.classifyCategoryUrl(json.toString());
+                        	tescolotus.classifyCategoryUrl(json.toString());
                             break; 
                         case "lazada": 
-                        	serviceLazada.classifyCategoryUrl(json.toString());
+                        	lazada.classifyCategoryUrl(json.toString());
                             break; 
-                        case "three": 
-                            System.out.println("three"); 
+                        case "makroclick": 
+                        	makroclick.classifyCategoryUrl(json.toString());
                             break; 
                         default: 
                             System.out.println("no match"); 
@@ -106,7 +111,7 @@ public class Controller {
                     switch(webName) 
                     { 
                         case "tescolotus": 
-                        	serviceTescolotus.categoryUrlDetail(json.toString());
+                        	tescolotus.categoryUrlDetail(json.toString());
                             break; 
                         case "two": 
                             System.out.println("two"); 
