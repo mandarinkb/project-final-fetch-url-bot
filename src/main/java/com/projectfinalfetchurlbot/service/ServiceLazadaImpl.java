@@ -35,7 +35,11 @@ public class ServiceLazadaImpl implements ServiceLazada{
 		JSONObject json = new JSONObject(objStr);
 		String url = json.getString("url");
 		try {
-    		Document doc = Jsoup.connect(url).timeout(60 * 1000).get();//
+    		Document doc = Jsoup.connect(url)
+    				            .userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) snap Chromium/83.0.4103.61 Chrome/83.0.4103.61 Safari/537.36")
+    				            .timeout(600000)
+    				            .maxBodySize(0)
+    				            .get();//
             Elements eles = doc.select(".lzd-site-menu-root");
             
             JSONObject objCategory = new JSONObject();

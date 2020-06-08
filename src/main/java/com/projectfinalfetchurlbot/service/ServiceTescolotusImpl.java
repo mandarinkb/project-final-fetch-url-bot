@@ -32,12 +32,19 @@ public class ServiceTescolotusImpl implements ServiceTescolotus{
 		String url = json.getString("url");
 		
     	try {
-    		Document doc = Jsoup.connect(url).timeout(60 * 1000).get();
+    		Document doc = Jsoup.connect(url)
+		                        .userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) snap Chromium/83.0.4103.61 Chrome/83.0.4103.61 Safari/537.36")
+		                        .timeout(600000)
+		                        .maxBodySize(0)
+		                        .get();//
             Elements eles = doc.select(".list-item.list-item-large");
             for (Element ele : eles) {
             	String category = ele.select(".name").html();
             	// ตัดหมวดหมู่ดังกล่าวออก
-            	if(!category.matches("ดูทั้งหมด") && !category.matches("แผนกเสื้อผ้า") && !category.matches("สินค้าอื่นๆ")) {
+            	if(!category.matches("ดูทั้งหมด") 
+            	   && !category.matches("แผนกเสื้อผ้า") 
+            	   && !category.matches("สินค้าอื่นๆ")
+            	   && !category.matches("ต้อนรับเปิดเทอม")) {
                     Element eleTitle = ele.select("a").first();
                     //String strUrl = eleTitle.attr("href");                    
                     String strUrl = eleTitle.absUrl("href");
@@ -67,7 +74,11 @@ public class ServiceTescolotusImpl implements ServiceTescolotus{
     	try {     	
         	boolean checkNextPage = true;       	
         	while(checkNextPage) {  
-            	Document doc = Jsoup.connect(url).timeout(60 * 1000).get();
+            	Document doc = Jsoup.connect(url)
+			                        .userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) snap Chromium/83.0.4103.61 Chrome/83.0.4103.61 Safari/537.36")
+			                        .timeout(600000)
+			                        .maxBodySize(0)
+			                        .get();//
             	//urlDetail
             	Elements elesUrlDetail = doc.select(".tile-content");
                 for (Element ele : elesUrlDetail) {

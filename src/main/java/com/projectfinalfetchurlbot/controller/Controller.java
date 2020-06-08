@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import com.projectfinalfetchurlbot.dao.Redis;
 import com.projectfinalfetchurlbot.function.DateTimes;
 import com.projectfinalfetchurlbot.function.Query;
+import com.projectfinalfetchurlbot.service.ServiceBigC;
 import com.projectfinalfetchurlbot.service.ServiceLazada;
 import com.projectfinalfetchurlbot.service.ServiceMakroclick;
 import com.projectfinalfetchurlbot.service.ServiceTescolotus;
@@ -40,6 +41,9 @@ public class Controller {
     
     @Autowired
     private ServiceMakroclick makroclick;
+    
+    @Autowired
+    private ServiceBigC bigC;
     
 
     //@Scheduled(cron = "#{@cronExpression_1}") 
@@ -94,6 +98,9 @@ public class Controller {
                         case "makroclick": 
                         	makroclick.classifyCategoryUrl(json.toString());
                             break; 
+                        case "bigc": 
+                        	bigC.classifyCategoryUrl(json.toString());
+                            break;
                         default: 
                             System.out.println("no match"); 
                     } 
