@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.projectfinalfetchurlbot.dao.Redis;
+import com.projectfinalfetchurlbot.function.CategoryFilter;
 import com.projectfinalfetchurlbot.function.DateTimes;
 import com.projectfinalfetchurlbot.function.Elasticsearch;
 import com.projectfinalfetchurlbot.function.OtherFunc;
@@ -24,7 +25,7 @@ public class ServiceBigCImpl implements ServiceBigC{
     private Redis rd;  
     
     @Autowired
-    private OtherFunc otherFunc;
+    private CategoryFilter categoryFilter;
 
     @Autowired
     private DateTimes dateTimes;
@@ -44,14 +45,10 @@ public class ServiceBigCImpl implements ServiceBigC{
             for (Element ele : eles.select("a")) {
             	String category = ele.text();
             	// ตัด category เหล่านี้ออกไป
-            	if(!category.equals("สินค้าบริการส่งด่วน") &&
-            	   !category.equals("สินค้ารับเปิดเทอม") &&	
-            	   !category.equals("เครื่องแต่งกาย") &&
-            	   !category.equals("ร้าน Pure") &&
-            	   !category.equals("สินค้าแบรนด์เบสิโค")) {
+            	if(categoryFilter.bigcFilter(category)) {
             		
             		//get cate_id
-            		String cateId = otherFunc.getCateId(category);
+            		String cateId = categoryFilter.getCateId(category);
             		String newCategory = els.getCategory(category);           	
                 	
                 	json.put("category", newCategory);

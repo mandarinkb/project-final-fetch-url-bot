@@ -1,18 +1,43 @@
 package com.projectfinalfetchurlbot.function;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
-public class OtherFunc {
-/*
-    public String getNewLinkImage(String url) {
-        url = url.replace("../../../..", "");
-        url = url.replace("../..", "");
-        url = url.replace("/..", "");
-        url = url.replace("..", "");
-        return url;
-    }
-    
+@Component
+public class CategoryFilter {
+	public boolean tescolotusFilter(String category) {
+		// ตัดเหล่านี้ออก
+		if(category.matches("ดูทั้งหมด") || 
+		   category.matches("สินค้าอื่นๆ") ||
+		   category.matches("ต้อนรับเปิดเทอม")) {
+		   return false;
+		}else {  // นอกนั้นทำงานปกติ
+		   return true;
+		}
+	}
+	
+	public boolean makroFilter(String category) {
+		// ตัดเหล่านี้ออก
+		if(category.matches("สมาร์ทและไลฟ์สไตล์") ) {
+		   return false;
+		}else {  // นอกนั้นทำงานปกติ
+		   return true;
+		}
+	}
+	
+	public boolean bigcFilter(String category) {
+		// ตัดเหล่านี้ออก
+		if(category.equals("สินค้ารับเปิดเทอม") ||	
+		   category.equals("สินค้าบริการส่งด่วน") ||
+           category.equals("อุปกรณ์กีฬา/ แคมปิ้ง/ เดินทาง") ||
+           category.equals("ยานยนต์") ||
+           category.equals("ร้าน Pure") ||
+           category.equals("สินค้าแบรนด์เบสิโค")) {
+		   return false;
+		}else {  // นอกนั้นทำงานปกติ
+		   return true;
+		}
+	}
+	
     //for makro
     public String getMenuId(String category) {
     	String menuId = null ;
@@ -132,5 +157,5 @@ public class OtherFunc {
         } 
     	return cate_id;
     }
-    */
 }
+

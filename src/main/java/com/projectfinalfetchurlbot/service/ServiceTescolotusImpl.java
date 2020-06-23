@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.projectfinalfetchurlbot.dao.Redis;
+import com.projectfinalfetchurlbot.function.CategoryFilter;
 import com.projectfinalfetchurlbot.function.DateTimes;
 import com.projectfinalfetchurlbot.function.Elasticsearch;
 
@@ -16,6 +17,9 @@ import redis.clients.jedis.Jedis;
 
 @Service
 public class ServiceTescolotusImpl implements ServiceTescolotus{
+	@Autowired
+	private CategoryFilter categoryFilter;
+	
 	@Autowired
 	private Elasticsearch els;
 	
@@ -41,17 +45,14 @@ public class ServiceTescolotusImpl implements ServiceTescolotus{
             for (Element ele : eles) {
             	String category = ele.select(".name").html();
             	// ตัดหมวดหมู่ดังกล่าวออก
-            	if(!category.matches("ดูทั้งหมด") 
-            	   && !category.matches("แผนกเสื้อผ้า") 
-            	   && !category.matches("สินค้าอื่นๆ")
-            	   && !category.matches("ต้อนรับเปิดเทอม")) {
+            	if(categoryFilter.tescolotusFilter(category)) {
                     Element eleTitle = ele.select("a").first();
                     //String strUrl = eleTitle.attr("href");                    
                     String strUrl = eleTitle.absUrl("href");
                     String categoryUrl = strUrl;
                     
-                    category = category.replace(",", "");
-                    category = category.replace("&amp; ", "");
+                    //category = category.replace(",", "");
+                    //category = category.replace("&amp; ", "");
                     
                     String newCategory = els.getCategory(category); // แปลง category ใหม่
                     

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.projectfinalfetchurlbot.dao.Redis;
+import com.projectfinalfetchurlbot.function.CategoryFilter;
 import com.projectfinalfetchurlbot.function.DateTimes;
 import com.projectfinalfetchurlbot.function.Elasticsearch;
 import com.projectfinalfetchurlbot.function.OtherFunc;
@@ -24,7 +25,7 @@ public class ServiceMakroclickImpl implements ServiceMakroclick{
     private Redis rd;  
     
     @Autowired
-    private OtherFunc otherFunc;
+    private CategoryFilter categoryFilter;
 
     @Autowired
     private DateTimes dateTimes;
@@ -44,13 +45,16 @@ public class ServiceMakroclickImpl implements ServiceMakroclick{
             for (Element ele : eles) {
             	//json = new JSONObject();
 	            String category = ele.select("p").html();
-	            String menuId = otherFunc.getMenuId(category);
-	            String newCategory = els.getCategory(category);
+	            
+	            if(categoryFilter.makroFilter(category)) {
+		            String menuId = categoryFilter.getMenuId(category);
+		            String newCategory = els.getCategory(category);
 
-	            json.put("category", newCategory);
-	            json.put("menuId", menuId);
-	            redis.rpush("detailUrl", json.toString());// จัดเก็บลง redis เพื่อหา detail ต่อ
-	            System.out.println(dateTimes.thaiDateTime() +" fetch makro ==> "+menuId);  
+		            json.put("category", newCategory);
+		            json.put("menuId", menuId);
+		            redis.rpush("detailUrl", json.toString());// จัดเก็บลง redis เพื่อหา detail ต่อ
+		            System.out.println(dateTimes.thaiDateTime() +" fetch makro ==> "+menuId);
+	            }
             }	
 			
 		}catch(Exception e) {
