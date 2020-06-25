@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.projectfinalfetchurlbot.dao.Redis;
+import com.projectfinalfetchurlbot.function.CategoryFilter;
 import com.projectfinalfetchurlbot.function.DateTimes;
 import com.projectfinalfetchurlbot.function.Elasticsearch;
 
@@ -20,6 +21,9 @@ import redis.clients.jedis.Jedis;
 
 @Service
 public class ServiceLazadaImpl implements ServiceLazada{
+    @Autowired
+    private CategoryFilter categoryFilter;
+	
 	@Autowired
 	private Elasticsearch els;
 	
@@ -58,7 +62,28 @@ public class ServiceLazadaImpl implements ServiceLazada{
             	JSONObject obj = arr.getJSONObject(i);
             	String cl = obj.getString("class");
             	String originalCategory = obj.getString("category");
-
+            	
+            	if(categoryFilter.lazadaFilter(originalCategory)) {           	
+            		Elements elesSubCategory = eles.select(cl);
+            		for(Element ele : elesSubCategory.select(".lzd-site-menu-sub-item")) {
+                        Element eleUrl = ele.select("a").first();
+                        String name = ele.select("span").first().html();
+                        String newCategory = els.getCategory(name);
+                        // กรณีไม่พบ category ใน elasticsearch
+                        if(newCategory != null) {
+                        	String urlDetail = eleUrl.absUrl("href"); 
+                        	
+                            json.put("category",newCategory);
+                            json.put("url",urlDetail);
+                            redis.rpush("detailUrl", json.toString());// จัดเก็บ url ลง redis เพื่อหา detail ต่อ
+                		
+                            System.out.println(dateTimes.thaiDateTime() +" fetch ==> "+urlDetail);       	                           
+                        }
+            		}           		
+            	}
+          	
+            	
+/*
             	// กรณี บ้านและไลฟ์สไตล์ ให้จัดเก็บข้อมูลบางส่วน(sub)
             	if(originalCategory.equals("บ้านและไลฟ์สไตล์")) {
             		
@@ -103,6 +128,8 @@ public class ServiceLazadaImpl implements ServiceLazada{
                         System.out.println(dateTimes.thaiDateTime() +" fetch ==> "+urlDetail); 
             		}
             	}
+            	
+*/            	
             }   
 			
 		}catch(Exception e) {

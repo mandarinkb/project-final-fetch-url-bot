@@ -35,6 +35,17 @@ public class CategoryFilter {
 		}
 	}
 	
+	public boolean lazadaFilter(String category) {
+		// ตัดเหล่านี้ออก
+		if(category.equals("อุปกรณ์เสริม อิเล็กทรอนิกส์") ||	
+		   category.equals("กีฬาและ การเดินทาง") ||
+           category.equals("ยานยนต์ และอุปกรณ์")) {
+		   return false;
+		}else {  // นอกนั้นทำงานปกติ
+		   return true;
+		}		
+	}
+	
     //for makro
     public String getMenuId(String category) {
     	String menuId = null ;
