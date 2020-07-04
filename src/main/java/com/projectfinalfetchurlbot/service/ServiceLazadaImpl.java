@@ -54,7 +54,7 @@ public class ServiceLazadaImpl implements ServiceLazada{
             	String category = ele.select("span").html();
             	objCategory.put("class","." + id);
             	objCategory.put("category", category);
-            	list.add(objCategory);	// เก้บ class และ category ลง list
+            	list.add(objCategory);	// เก็บ class และ category ลง list
             } 
             //นำ list ที่เก็บไว้มาแสดง
             JSONArray arr = new JSONArray(list.toString());
@@ -69,73 +69,20 @@ public class ServiceLazadaImpl implements ServiceLazada{
                         Element eleUrl = ele.select("a").first();
                         String name = ele.select("span").first().html();
                         String newCategory = els.getCategory(name);
-                        // กรณีไม่พบ category ใน elasticsearch
+                        // กรณีไม่พบ category ที่จัดหมวดหมู่ไว้ใน elasticsearch ไม่ต้องทำงาน (sub category)
                         if(newCategory != null) {
                         	String urlDetail = eleUrl.absUrl("href"); 
-                        	
                             json.put("category",newCategory);
                             json.put("url",urlDetail);
-                            redis.rpush("detailUrl", json.toString());// จัดเก็บ url ลง redis เพื่อหา detail ต่อ
-                		
+                            redis.rpush("detailUrl", json.toString());// จัดเก็บ url ลง redis เพื่อหา detail ต่อ               		
                             System.out.println(dateTimes.thaiDateTime() +" fetch ==> "+urlDetail);       	                           
                         }
             		}           		
-            	}
-          	
-            	
-/*
-            	// กรณี บ้านและไลฟ์สไตล์ ให้จัดเก็บข้อมูลบางส่วน(sub)
-            	if(originalCategory.equals("บ้านและไลฟ์สไตล์")) {
-            		
-            		// แปลงและจัดเก็บ 
-            		String newCategory = els.getCategory(originalCategory); // แปลง category ใหม่
-            		
-            		// เก็บ Sub ลง list ก่อน
-            		Elements elesSubCategory = eles.select(cl);
-            		for(Element ele : elesSubCategory.select(".lzd-site-menu-sub-item")) {
-                        String subCategory = ele.select("span").first().html(); 
-                        // เก็บเฉพาะ อุปกรณ์ทำความสะอาดและซักรีด(detail)
-                        if(subCategory.equals("อุปกรณ์ทำความสะอาดและซักรีด")) {
-                    		for(Element e : ele.select(".lzd-site-menu-grand-item")) {
-                                Element eleDetail = e.select("a").first();
-                                String urlDetail = eleDetail.absUrl("href");   // จัดเก็บ url ลง redis เพื่อหา content ต่อ
-                                //String name = e.select("span").html();
-                                
-                                json.put("category",newCategory);
-                                json.put("url",urlDetail);
-                                redis.rpush("detailUrl", json.toString());// จัดเก็บ url ลง redis เพื่อหา detail ต่อ
-                    		
-                                System.out.println(dateTimes.thaiDateTime() +" fetch ==> "+urlDetail);    
-                    		}
-                        }
-            		}
-            		
-            	}else {
-            		// แปลงและจัดเก็บ 
-            		String newCategory = els.getCategory(originalCategory); // แปลง category ใหม่
- 
-            		// กรณีอื่นๆ เก็บ detail ได้เลย
-            		Elements elesSubCategory = eles.select(cl);
-            		for(Element ele : elesSubCategory.select(".lzd-site-menu-grand-item")) {
-                        Element eleUrl = ele.select("a").first();
-                        String urlDetail = eleUrl.absUrl("href");    // จัดเก็บ url ลง redis เพื่อหา content ต่อ
-                        //String name = ele.select("span").html();
-                        
-                        json.put("category",newCategory);
-                        json.put("url",urlDetail);
-                        redis.rpush("detailUrl", json.toString());// จัดเก็บ url ลง redis เพื่อหา detail ต่อ  
-            		
-                        System.out.println(dateTimes.thaiDateTime() +" fetch ==> "+urlDetail); 
-            		}
-            	}
-            	
-*/            	
-            }   
-			
+            	}        	
+            }   	
 		}catch(Exception e) {
     		System.out.println(e.getMessage());
-    		redis.rpush("startUrl", objStr); //กรณี error ให้ยัดลง redis ที่รับมาอีกรอบ
+    		//redis.rpush("startUrl", objStr); //กรณี error ให้ยัดลง redis ที่รับมาอีกรอบ
     	}
 	}
-
 }

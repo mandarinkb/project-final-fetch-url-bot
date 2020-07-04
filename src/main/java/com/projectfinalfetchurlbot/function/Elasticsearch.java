@@ -43,6 +43,7 @@ public class Elasticsearch {
         }
     }
 
+    // จัดหมวดหมู่
     public String getCategory(String category) {
         String elsValue = null;
         try {

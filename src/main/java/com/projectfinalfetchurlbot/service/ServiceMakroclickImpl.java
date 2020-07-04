@@ -12,7 +12,6 @@ import com.projectfinalfetchurlbot.dao.Redis;
 import com.projectfinalfetchurlbot.function.CategoryFilter;
 import com.projectfinalfetchurlbot.function.DateTimes;
 import com.projectfinalfetchurlbot.function.Elasticsearch;
-import com.projectfinalfetchurlbot.function.OtherFunc;
 
 import redis.clients.jedis.Jedis;
 
@@ -43,24 +42,19 @@ public class ServiceMakroclickImpl implements ServiceMakroclick{
 		                        .get();//
             Elements eles = doc.select(".MenuCategoryPopOver__MenuListView-sc-77t7qb-2"); 
             for (Element ele : eles) {
-            	//json = new JSONObject();
 	            String category = ele.select("p").html();
 	            
 	            if(categoryFilter.makroFilter(category)) {
 		            String menuId = categoryFilter.getMenuId(category);
 		            String newCategory = els.getCategory(category);
-
 		            json.put("category", newCategory);
 		            json.put("menuId", menuId);
 		            redis.rpush("detailUrl", json.toString());// จัดเก็บลง redis เพื่อหา detail ต่อ
 		            System.out.println(dateTimes.thaiDateTime() +" fetch makro ==> "+menuId);
 	            }
-            }	
-			
+            }				
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
-		}
-		
+		}		
 	}
-
 }

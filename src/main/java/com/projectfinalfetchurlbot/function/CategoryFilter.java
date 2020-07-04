@@ -108,6 +108,7 @@ public class CategoryFilter {
     	return menuId;
     }   
 
+    // for bigC
     public String getCateId(String category) {
     	String cate_id = null ;
         switch(category) 

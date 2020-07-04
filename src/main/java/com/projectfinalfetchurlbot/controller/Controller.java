@@ -45,8 +45,6 @@ public class Controller {
     @Autowired
     private ServiceBigC bigC;
     
-
-    //@Scheduled(cron = "#{@cronExpression_1}") 
     @Scheduled(cron = "0 0/1 * 1/1 * ?") // เรียกใช้งานทุกๆ 1 นาที
     public void runTask_1() {   	
         System.out.println(dateTimes.interDateTime() + " : fetch url bot db_1 start");        
@@ -55,12 +53,10 @@ public class Controller {
         // เช็คสถานะการสลับ database ว่าให้ db ไหนทำงาน
         if(db1.equals(strStatus)) {
         	task(db_1);
-        }
-            
+        }      
         System.out.println(dateTimes.interDateTime() + " : fetch url bot db_1 stop");
     }
 
-    //@Scheduled(cron = "#{@cronExpression_2}") 
     @Scheduled(cron = "0 0/1 * 1/1 * ?") // เรียกใช้งานทุกๆ 1 นาที
     public void runTask_2() {
     	System.out.println(dateTimes.interDateTime() + " : fetch url bot db_2 start");
@@ -77,16 +73,13 @@ public class Controller {
             Jedis redis = rd.connect();
             boolean checkStartUrl = true;
             boolean checkCategorytUrl = true;
-            // หา url เริ่มต้นจาก db
+            // หา url ที่ทำงานจาก redis database
             while (checkStartUrl) {
             	String obj = redis.rpop("startUrl");
             	if (obj != null) {
                 	JSONObject json = new JSONObject(obj);
-                	json.put("database", dbName); // บันทึกชื่อ database ไว้
-                	
+                	json.put("database", dbName); // บันทึกชื่อ database ไว้              	
                     String webName = json.getString("web_name");
-                	//obj = json.toString();
-                	
                     switch(webName) 
                     { 
                         case "tescolotus": 
@@ -108,7 +101,7 @@ public class Controller {
                 	checkStartUrl = false;
                 }
             }
-            // หาประเภทของ url
+            // หาหมวดหมู่ของ url
             while (checkCategorytUrl) {
             	String obj = redis.rpop("categoryUrl");
             	if (obj != null) {
@@ -120,22 +113,13 @@ public class Controller {
                         case "tescolotus": 
                         	tescolotus.categoryUrlDetail(json.toString());
                             break; 
-                        case "two": 
-                            System.out.println("two"); 
-                            break; 
-                        case "three": 
-                            System.out.println("three"); 
-                            break; 
                         default: 
                             System.out.println("no match"); 
-                    } 
-            		
+                    }  		
                 } else {
                 	checkCategorytUrl = false;
                 }
-            }
-    		
-    		
+            }   		
     	}catch(Exception e) {
     		System.out.println(e.getMessage());
     	}  

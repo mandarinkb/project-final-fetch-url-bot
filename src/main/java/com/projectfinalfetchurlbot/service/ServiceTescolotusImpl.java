@@ -29,12 +29,12 @@ public class ServiceTescolotusImpl implements ServiceTescolotus{
     @Autowired
     private DateTimes dateTimes;
 	
+    // จัดหมวดหมู่
 	@Override
 	public void classifyCategoryUrl(String obj) {
 		Jedis redis = rd.connect();
 		JSONObject json = new JSONObject(obj);
-		String url = json.getString("url");
-		
+		String url = json.getString("url");		
     	try {
     		Document doc = Jsoup.connect(url)
 		                        .userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) snap Chromium/83.0.4103.61 Chrome/83.0.4103.61 Safari/537.36")
@@ -44,18 +44,12 @@ public class ServiceTescolotusImpl implements ServiceTescolotus{
             Elements eles = doc.select(".list-item.list-item-large");
             for (Element ele : eles) {
             	String category = ele.select(".name").html();
-            	// ตัดหมวดหมู่ดังกล่าวออก
+            	// กรองหมวดหมู่
             	if(categoryFilter.tescolotusFilter(category)) {
-                    Element eleTitle = ele.select("a").first();
-                    //String strUrl = eleTitle.attr("href");                    
+                    Element eleTitle = ele.select("a").first();                   
                     String strUrl = eleTitle.absUrl("href");
                     String categoryUrl = strUrl;
-                    
-                    //category = category.replace(",", "");
-                    //category = category.replace("&amp; ", "");
-                    
                     String newCategory = els.getCategory(category); // แปลง category ใหม่
-                    
                     json.put("category",newCategory);
                     json.put("url",categoryUrl);
                     redis.rpush("categoryUrl", json.toString());
@@ -63,10 +57,11 @@ public class ServiceTescolotusImpl implements ServiceTescolotus{
             }
     	}catch(Exception e) {
     		System.out.println(e.getMessage());
-    		redis.rpush("startUrl", obj); //กรณี error ให้ยัดลง redis ที่รับมาอีกรอบ
+    		//redis.rpush("startUrl", obj); //กรณี error ให้ยัดลง redis ที่รับมาอีกรอบ
     	}
 	}
 
+	// ดึงข้อมูลในหน้าต่างๆทุกหน้า (all pagination)
 	@Override
 	public void categoryUrlDetail(String obj) {
 		Jedis redis = rd.connect();
@@ -85,11 +80,10 @@ public class ServiceTescolotusImpl implements ServiceTescolotus{
                 for (Element ele : elesUrlDetail) {
                     Element eleUrl = ele.select("a").first();
                     String urlDetail = eleUrl.absUrl("href");
-                    //System.out.println(urlDetail); 
                     json.put("url",urlDetail);
                     redis.rpush("detailUrl", json.toString());
             	}  		
-            	//nextpage
+            	//next page
             	Elements elesNextPage = doc.select(".pagination--page-selector-wrapper");
         		Element eleNextPage = elesNextPage.select(".pagination-btn-holder").last();
                 Element eleA = eleNextPage.select("a").first();
@@ -103,7 +97,7 @@ public class ServiceTescolotusImpl implements ServiceTescolotus{
         	}
     	}catch(Exception e) {
     		System.out.println(e.getMessage());
-    		redis.rpush("categorytUrl", obj); //กรณี error ให้ยัดลง redis ที่รับมาอีกรอบ
+    		//redis.rpush("categorytUrl", obj); //กรณี error ให้ยัดลง redis ที่รับมาอีกรอบ
     	}
 	}
 

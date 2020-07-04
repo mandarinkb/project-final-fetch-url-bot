@@ -52,7 +52,7 @@ public class Lazada extends CategoryFilter{
 
     	return newCategory;	
     }
-    public static void getContent(String url) {
+    public void getContent(String url) {
         try {
     		Document doc = Jsoup.connect(url)
     				.userAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36")
@@ -63,6 +63,8 @@ public class Lazada extends CategoryFilter{
             String detail = eles.select("script").get(3).html();
             detail = detail.replace("window.pageData=", "");
             
+            System.out.println(detail);
+/*            
             JSONObject obj = new JSONObject(detail);
             JSONObject objMods = obj.getJSONObject("mods");
             JSONArray arrListItems = objMods.getJSONArray("listItems");
@@ -100,8 +102,11 @@ public class Lazada extends CategoryFilter{
             		System.out.println(discount);
             		System.out.println(productUrl);
             		System.out.println("==========================");
-            	}
-            }   
+            	}	
+            }  
+*/            
+            
+            
         }catch(Exception e) {
         	System.out.println("error => " + e.getMessage());
         }
@@ -159,10 +164,14 @@ public class Lazada extends CategoryFilter{
     }
     
     public static void main(String[] args) throws IOException, InterruptedException{
-    	String url = "https://www.lazada.co.th/#";
+    	String url = "https://www.lazada.co.th/shop-mobiles";
+    	//String url = "https://www.lazada.co.th/#";
     	Lazada l = new Lazada();
-    	l.getCategory(url);
-    	//l.getContent(url);
+    	//l.getCategory(url);
+    	l.getContent(url);
+    	
+    	// review       คะแนน (1321)
+    	// ratingScore  เฉลี่ยคะแนน 4.7/5
     }	
 	
 }

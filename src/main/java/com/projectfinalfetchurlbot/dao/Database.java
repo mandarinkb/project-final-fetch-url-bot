@@ -58,7 +58,6 @@ public class Database {
             if (stmt != null) {
                 stmt.close();
                 conn.close();
-                //System.out.println("close connect");
             }
         } catch (SQLException e) {
             e.printStackTrace();

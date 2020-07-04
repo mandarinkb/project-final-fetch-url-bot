@@ -12,7 +12,6 @@ import com.projectfinalfetchurlbot.dao.Redis;
 import com.projectfinalfetchurlbot.function.CategoryFilter;
 import com.projectfinalfetchurlbot.function.DateTimes;
 import com.projectfinalfetchurlbot.function.Elasticsearch;
-import com.projectfinalfetchurlbot.function.OtherFunc;
 
 import redis.clients.jedis.Jedis;
 
@@ -46,21 +45,17 @@ public class ServiceBigCImpl implements ServiceBigC{
             	String category = ele.text();
             	// ตัด category เหล่านี้ออกไป
             	if(categoryFilter.bigcFilter(category)) {
-            		
             		//get cate_id
             		String cateId = categoryFilter.getCateId(category);
             		String newCategory = els.getCategory(category);           	
-                	
                 	json.put("category", newCategory);
                 	json.put("cateId", cateId);
     	            redis.rpush("detailUrl", json.toString());// จัดเก็บลง redis เพื่อหา detail ต่อ
     	            System.out.println(dateTimes.thaiDateTime() +" fetch bigC ==> "+cateId);  
             	}
-            }
-			
+            }			
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
 		}
 	}
-
 }

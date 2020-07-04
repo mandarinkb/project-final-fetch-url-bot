@@ -13,6 +13,5 @@ public class Redis {
     public Jedis connect(){
        Jedis redis = new Jedis(redis_ip); 
        return redis;
-    }
-    
+    } 
 }
