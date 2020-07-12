@@ -18,12 +18,6 @@ import redis.clients.jedis.Jedis;
 
 @Component
 public class Controller {
-    @Value("${db_1}")
-    private String db_1;
-    
-    @Value("${db_2}")
-    private String db_2;
-    
     @Autowired
     private DateTimes dateTimes;
 
@@ -44,29 +38,14 @@ public class Controller {
     
     @Autowired
     private ServiceBigC bigC;
-    
-    @Scheduled(cron = "0 0/1 * 1/1 * ?") // เรียกใช้งานทุกๆ 1 นาที
-    public void runTask_1() {   	
-        System.out.println(dateTimes.interDateTime() + " : fetch url bot db_1 start");        
-        String db1 = q.StrExcuteQuery("select DATABASE_STATUS from SWITCH_DATABASE where DATABASE_NAME = '"+db_1+"';");
-        String strStatus = "1";
-        // เช็คสถานะการสลับ database ว่าให้ db ไหนทำงาน
-        if(db1.equals(strStatus)) {
-        	task(db_1);
-        }      
-        System.out.println(dateTimes.interDateTime() + " : fetch url bot db_1 stop");
-    }
 
     @Scheduled(cron = "0 0/1 * 1/1 * ?") // เรียกใช้งานทุกๆ 1 นาที
-    public void runTask_2() {
-    	System.out.println(dateTimes.interDateTime() + " : fetch url bot db_2 start");
-        String db2 = q.StrExcuteQuery("select DATABASE_STATUS from SWITCH_DATABASE where DATABASE_NAME = '"+db_2+"';");
-        String strStatus = "1";
-        if(db2.equals(strStatus)) {
-        	task(db_2);
-        }
-        System.out.println(dateTimes.interDateTime() + " : fetch url bot db_2 stop");
-    }
+    public void run() {   	
+        System.out.println(dateTimes.interDateTime() + " : fetch url bot start");        
+        String dbName = q.StrExcuteQuery("select DATABASE_NAME from SWITCH_DATABASE where DATABASE_STATUS = 0");
+        task(dbName);
+        System.out.println(dateTimes.interDateTime() + " : fetch url bot stop");
+    }    
     
     public void task(String dbName) {
     	try {
@@ -80,6 +59,7 @@ public class Controller {
                 	JSONObject json = new JSONObject(obj);
                 	json.put("database", dbName); // บันทึกชื่อ database ไว้              	
                     String webName = json.getString("web_name");
+                    System.out.println(webName);
                     switch(webName) 
                     { 
                         case "tescolotus": 
