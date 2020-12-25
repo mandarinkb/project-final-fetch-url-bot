@@ -117,6 +117,38 @@ public class BigC extends CategoryFilter{
     	return newCategory;	
     }
     
+    public List<JSONObject> getMainCategory() {
+        String elsValue = null;
+        try {
+        	Unirest.setTimeouts(0, 0);
+        	HttpResponse<String> response = Unirest.post("https://www.bigc.co.th/api/categories/mainCategory?_store=2")
+        	  .header("Cookie", "__cfduid=d9a40b9d9b244c28a4c0760f1fca09b871608172638")
+        	  .asString();
+            elsValue = response.getBody();
+        } catch (UnirestException ex) {
+            System.out.println(ex);
+        }
+        List<JSONObject> list = new ArrayList<>();
+		try {
+	        JSONObject objCategory = new JSONObject(elsValue);
+	        JSONArray arrCategory= objCategory.getJSONArray("result");
+	        
+	        for (int i = 0; i < arrCategory.length(); i++) {
+	        	JSONObject obj = new JSONObject();
+	            String id = arrCategory.getJSONObject(i).getString("entity_id");	            
+	            String name = arrCategory.getJSONObject(i).getString("name");
+	            obj.put("cate_id", id);
+	            obj.put("cate_name", name);
+	            list.add(obj);  
+	        }
+			
+		} catch (JSONException e) {
+			System.out.println(e);
+		}
+		System.out.println(list);
+    	return list;	
+    }
+    
     public String bigCApi(String cateId ,String page) {
     	String elsValue = null;
     	try {
@@ -167,6 +199,8 @@ public class BigC extends CategoryFilter{
 		            .maxBodySize(0)
 		            .get();//
             Elements eles = doc.select(".swiper-wrapper");
+            System.out.println(doc);
+       /*     
             for (Element ele : eles.select("a")) {
             	json = new JSONObject();
             	String category = ele.text();
@@ -190,6 +224,7 @@ public class BigC extends CategoryFilter{
             	}
             	
             }
+        */    
     	}catch(Exception e) {
     		System.out.println("error => "+e.getMessage());
     	}
@@ -276,7 +311,24 @@ public class BigC extends CategoryFilter{
     public static void main(String[] args) {
     	String url = "https://www.bigc.co.th/";
     	BigC b = new BigC();
-    	b.getCategory(url);
+    	//b.getCategory(url);
+    	
+    	List<JSONObject> list = b.getMainCategory();
+    	JSONArray arrHits = new JSONArray(list);
+    		try {
+    			for(int i = 0; i < arrHits.length(); i++) {
+    				String cate_name = arrHits.getJSONObject(i).getString("cate_name");
+    				String cate_id = arrHits.getJSONObject(i).getString("cate_id");
+    				System.out.println("cate_name => "+cate_name);
+    				System.out.println("cate_id => "+cate_id);
+    				System.out.println("===========");
+				
+    			}
+			} catch (JSONException e) {
+				System.out.println(e);
+			}
+    		
+    	
     	//b.getContent(b.list.toString());
     	
     	//System.out.println(b.randomStr());

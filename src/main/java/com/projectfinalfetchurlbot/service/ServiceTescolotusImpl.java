@@ -44,12 +44,15 @@ public class ServiceTescolotusImpl implements ServiceTescolotus{
             Elements eles = doc.select(".list-item.list-item-large");
             for (Element ele : eles) {
             	String category = ele.select(".name").html();
+            	System.out.println("category ==> "+category);
             	// กรองหมวดหมู่
             	if(categoryFilter.tescolotusFilter(category)) {
                     Element eleTitle = ele.select("a").first();                   
                     String strUrl = eleTitle.absUrl("href");
                     String categoryUrl = strUrl;
                     String newCategory = els.getCategory(category); // แปลง category ใหม่
+                    System.out.println("new category ==> "+newCategory);
+                    
                     json.put("category",newCategory);
                     json.put("url",categoryUrl);
                     redis.rpush("categoryUrl", json.toString());

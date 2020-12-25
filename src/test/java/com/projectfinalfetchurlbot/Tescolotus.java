@@ -25,7 +25,7 @@ public class Tescolotus extends CategoryFilter{
         String elsValue = null;
         try {
         	Unirest.setTimeouts(0, 0);
-        	HttpResponse<String> response = Unirest.post("http://127.0.0.1:9200/web_scrapping_categories2/_search")
+        	HttpResponse<String> response = Unirest.post("http://127.0.0.1:9200/web_scrapping_categories/_search")
         	  .header("Content-Type", "application/json")
         	  .body("{\"query\": {\"bool\": {\"must\": {\"match_phrase\": {\"tag\": \""+category+"\"}}}}}")
         	  .asString();
@@ -69,7 +69,7 @@ public class Tescolotus extends CategoryFilter{
             Elements eles = doc.select(".list-item.list-item-large");
             for (Element ele : eles) {
             	String category = ele.select(".name").html();
-            	// System.out.println(category); 
+            	System.out.println(category); 
             	// ตัดหมวดหมู่ดังกล่าวออก
             	if(this.tescolotusFilter(category)) {
                     Element eleTitle = ele.select("a").first();
@@ -80,7 +80,7 @@ public class Tescolotus extends CategoryFilter{
                     //category = category.replace(",", "");
                     //category = category.replace("&amp; ", "");
                     
-                    System.out.println(category); 
+                    //System.out.println(category); 
                     System.out.println("change => "+this.changeCategory(category)); 
                     
                     //String newCategory = els.getCategory(category); // แปลง category ใหม่

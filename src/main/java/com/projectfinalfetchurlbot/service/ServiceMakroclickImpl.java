@@ -43,10 +43,13 @@ public class ServiceMakroclickImpl implements ServiceMakroclick{
             Elements eles = doc.select(".MenuCategoryPopOver__MenuListView-sc-77t7qb-2"); 
             for (Element ele : eles) {
 	            String category = ele.select("p").html();
+	            System.out.println("category ==> "+category);
 	            
 	            if(categoryFilter.makroFilter(category)) {
 		            String menuId = categoryFilter.getMenuId(category);
 		            String newCategory = els.getCategory(category);
+		            System.out.println("new category ==> "+newCategory);
+		            
 		            json.put("category", newCategory);
 		            json.put("menuId", menuId);
 		            redis.rpush("detailUrl", json.toString());// จัดเก็บลง redis เพื่อหา detail ต่อ
