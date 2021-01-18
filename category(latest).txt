@@ -81,7 +81,7 @@ cate_id  = "6791"   ()   สินค้าแบรนด์เบสิโค
 
 web_scrapping_categories
 
-============== เพิ่ม update category BigC 18/12/2563 และ เพิ่ม Makcro update category 22/12/2563=====================
+============== เพิ่ม update category BigC 18/12/2563 และ เพิ่ม Makcro update category 22/12/2563 และ tescolotus update category 25/12/2563=====================
 =1=
 {
     "category":"เครื่องใช้ไฟฟ้าและอุปกรณ์อิเล็กทรอนิกส์",
