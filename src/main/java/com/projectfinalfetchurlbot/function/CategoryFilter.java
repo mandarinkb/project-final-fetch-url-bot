@@ -18,6 +18,7 @@ public class CategoryFilter {
 	public boolean makroFilter(String category) {
 		// ตัดเหล่านี้ออก
 		if(category.matches("สมาร์ทและไลฟ์สไตล์") ||
+		   category.matches("สินค้าสั่งพิเศษ และสินค้าเทศกาล") ||
 		   category.matches("Own Brand")) {
 		   return false;
 		}else {  // นอกนั้นทำงานปกติ
@@ -31,6 +32,7 @@ public class CategoryFilter {
 		   category.equals("สินค้าส่งด่วน 1 ชม.") ||
 		   category.equals("บ้านและไลฟ์สไตล์") ||
            category.equals("ร้านเพรียวฟาร์มาซี") ||
+           category.equals("ร้านค้าส่ง") ||
            category.equals("สินค้าแบรนด์เบสิโค")) {
 		   return false;
 		}else {  // นอกนั้นทำงานปกติ

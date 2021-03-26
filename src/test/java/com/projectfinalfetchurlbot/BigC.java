@@ -17,7 +17,7 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-public class BigC extends CategoryFilter{
+public class BigC{
 	public String icon = "https://www.bigc.co.th/_nuxt/img/108a02e.png"; 
 	public List<JSONObject> list = new ArrayList<>();
     public String getCateId(String category) {
