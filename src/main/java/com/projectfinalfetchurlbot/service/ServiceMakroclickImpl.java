@@ -1,5 +1,8 @@
 package com.projectfinalfetchurlbot.service;
 
+import java.text.DecimalFormat;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -12,6 +15,7 @@ import com.projectfinalfetchurlbot.dao.Redis;
 import com.projectfinalfetchurlbot.function.CategoryFilter;
 import com.projectfinalfetchurlbot.function.DateTimes;
 import com.projectfinalfetchurlbot.function.Elasticsearch;
+import com.projectfinalfetchurlbot.function.OtherFunc;
 
 import redis.clients.jedis.Jedis;
 
@@ -28,6 +32,9 @@ public class ServiceMakroclickImpl implements ServiceMakroclick{
 
     @Autowired
     private DateTimes dateTimes;
+    
+    @Autowired
+    private OtherFunc otherFunc;
 
 	@Override
 	public void classifyCategoryUrl(String objStr) {
@@ -52,12 +59,44 @@ public class ServiceMakroclickImpl implements ServiceMakroclick{
 		            
 		            json.put("category", newCategory);
 		            json.put("menuId", menuId);
-		            redis.rpush("detailUrl", json.toString());// จัดเก็บลง redis เพื่อหา detail ต่อ
-		            System.out.println(dateTimes.thaiDateTime() +" fetch makro ==> "+menuId);
+		            redis.rpush("categoryUrl", json.toString());// จัดเก็บลง redis เพื่อหา detail ต่อ
+		            System.out.println(dateTimes.thaiDateTime() +" fetch makro ==> "+category);
 	            }
             }				
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
 		}		
+	}
+
+	@Override
+	public void categoryUrlDetail(String objStr) {
+		Jedis redis = rd.connect();
+	    String urlDetail = "https://www.makroclick.com/th/products/";
+		try {
+			JSONObject obj = new JSONObject(objStr);
+			String category = obj.getString("category");
+			String menuId = obj.getString("menuId");
+			String elas = els.makroApi(menuId, "1");
+			int total = otherFunc.totalPage(elas); // หา page ทั้งหมดก่อน
+            System.out.println("category => "+category);
+            System.out.println("lastPage => "+total);
+            
+			// วนหา pagination ของ page นั้นๆ
+			for(int j = 1; j <= total; j++) {
+				String elasValue = els.makroApi(menuId, Integer.toString(j));
+				JSONObject objValue = new JSONObject(elasValue);
+				JSONArray arrContent = objValue.getJSONArray("content");
+				for (int k = 0; k < arrContent.length(); k++) {
+					JSONObject objItems = arrContent.getJSONObject(k);
+					String productUrl = urlDetail + objItems.getString("productCode");
+    				obj.put("makro_data", objItems.toString());
+    				obj.put("productUrl", productUrl);
+    				redis.rpush("detailUrl", obj.toString());
+    				System.out.println(dateTimes.thaiDateTime() +" fetch ==> "+productUrl);
+				}
+			}	
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+		}	
 	}
 }

@@ -69,5 +69,59 @@ public class Elasticsearch {
         }
     	return newCategory;	
     }
+    
+    public String makroApi(String menuId ,String page) {
+        String elsValue = null;
+        try {
+        	Unirest.setTimeouts(0, 0);
+        	HttpResponse<String> response = Unirest.post("https://ocs-prod-api.makroclick.com/next-product/public/api/product/search")
+        	  .header("Content-Type", "application/json")
+        	  .body("{\"locale\":\"th_TH\","
+        	  		+ "\"minPrice\":null,"
+        	  		+ "\"maxPrice\":null,"
+        	  		+ "\"menuId\":"+menuId+","
+        	  		+ "\"hierarchies\":[],"
+        	  		+ "\"customerType\":\"MKC\","
+        	  		+ "\"page\":"+page+","
+        	  		+ "\"pageSize\":32,"
+        	  		+ "\"sorting\":\"SORTING_LAST_UPDATE\","
+        	  		+ "\"reloadPrice\":true}")
+        	  .asString();
+
+            elsValue = response.getBody();
+        } catch (UnirestException ex) {
+        	System.out.println(ex.getMessage());
+        }
+
+    	return elsValue;	
+    }
+    
+    public String bigCApi(String cateId ,String page) {
+    	String elsValue = null;
+    	try {
+    		Unirest.setTimeouts(0, 0);
+    		HttpResponse<String> response = Unirest.post("https://www.bigc.co.th/api/categories/getproductListBycateId?_store=2&stock_id=1")
+    		  .header("Content-Type", "application/json")
+    		  .header("Cookie", "__cfduid=d2a52d4a4656e2822d5fa36c91c494f2c1590843646; __cfruid=2cc422a0cc7785dccdce2bc2e0546577f16d6f00-1591341055")
+    		  .body("{\"cate_id\": \""+cateId+"\","
+    		  		+ "\"ignore_items\": \"\","
+    		  		+ "\"page_no\": "+page+","
+    		  		+ "\"page_size\": 36,"
+    		  		+ "\"selected_categories\": \"\","
+    		  		+ "\"selected_brands\": \"\","
+    		  		+ "\"sort_by\": \"bestsellers:desc\","
+    		  		+ "\"price_from\": \"\","
+    		  		+ "\"price_to\": \"\","
+    		  		+ "\"filter\": [],"
+    		  		+ "\"stock_id\": 1}")
+    		  .asString();
+
+    		elsValue = response.getBody();
+    	}catch (Exception ex) {
+        	System.out.println(ex.getMessage());
+        }
+    	
+    	return elsValue;
+    }
 
 }

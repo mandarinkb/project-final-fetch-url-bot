@@ -1,14 +1,7 @@
 package com.projectfinalfetchurlbot.service;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +11,7 @@ import com.projectfinalfetchurlbot.dao.Redis;
 import com.projectfinalfetchurlbot.function.CategoryFilter;
 import com.projectfinalfetchurlbot.function.DateTimes;
 import com.projectfinalfetchurlbot.function.Elasticsearch;
+import com.projectfinalfetchurlbot.function.OtherFunc;
 
 import redis.clients.jedis.Jedis;
 
@@ -34,6 +28,9 @@ public class ServiceBigCImpl implements ServiceBigC{
 
     @Autowired
     private DateTimes dateTimes;
+    
+    @Autowired
+    private OtherFunc otherFunc;
 
 	@Override
 	public void classifyCategoryUrl(String objStr) {
@@ -66,39 +63,47 @@ public class ServiceBigCImpl implements ServiceBigC{
             		
                 	json.put("category", newCategory);
                 	json.put("cateId", String.valueOf(cateId));
-    	            redis.rpush("detailUrl", json.toString());// จัดเก็บลง redis เพื่อหา detail ต่อ
-    	            System.out.println(dateTimes.thaiDateTime() +" fetch bigC ==> "+cateId);  
+    	            redis.rpush("categoryUrl", json.toString());// จัดเก็บลง redis เพื่อหา detail ต่อ 
+    	            System.out.println(dateTimes.thaiDateTime() +" fetch bigC ==> "+categoryName);  
             	}
-	        }
-/*			
-    		Document doc = Jsoup.connect(url)
-		            .userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) snap Chromium/83.0.4103.61 Chrome/83.0.4103.61 Safari/537.36")
-		            .timeout(60000)
-		            .maxBodySize(0)
-		            .get();
-            Elements eles = doc.select(".swiper-wrapper");
-            for (Element ele : eles.select("a")) {
-            	String category = ele.text();
-            	
-            	System.out.println(category);
-            	
-            	// ตัด category เหล่านี้ออกไป
-            	if(categoryFilter.bigcFilter(category)) {
-            		//get cate_id
-            		String cateId = categoryFilter.getCateId(category);
-            		String newCategory = els.getCategory(category); 
-            		
-            		System.out.println("new category ==> "+newCategory);
-            		
-                	json.put("category", newCategory);
-                	json.put("cateId", cateId);
-    	            redis.rpush("detailUrl", json.toString());// จัดเก็บลง redis เพื่อหา detail ต่อ
-    	            System.out.println(dateTimes.thaiDateTime() +" fetch bigC ==> "+cateId);  
-            	}
-            	}
-*/            	 			
+	        }      	 			
 		}catch(Exception e) {
 			System.out.println(e.getMessage());
 		}
+	}
+
+	@Override
+	public void categoryUrlDetail(String objStr) {
+		Jedis redis = rd.connect();
+		String baseUrl = "https://www.bigc.co.th/";
+		try {
+			JSONObject obj = new JSONObject(objStr);
+			String category = obj.getString("category");
+			String cateId = obj.getString("cateId");
+        	//call bigCapi
+        	String elasValue = els.bigCApi(cateId, "1");
+        	//get last page
+            int lastPage = otherFunc.lastPage(elasValue);
+            System.out.println("category => "+category);
+            System.out.println("lastPage => "+lastPage);
+            // วนหา pagination ของ page นั้นๆ
+            for(int j = 1; j <= lastPage; j++) {
+            	String bigCValue = els.bigCApi(cateId, Integer.toString(j));
+            	// ดึงข้อมูล
+    			JSONObject json = new JSONObject(bigCValue);
+    			JSONObject result = json.getJSONObject("result");
+    			JSONArray arrItems = result.getJSONArray("items");
+    			for (int k = 0; k < arrItems.length(); k++) {
+    				JSONObject objItems = arrItems.getJSONObject(k);
+    				String productUrl = baseUrl + objItems.getString("url_key");
+    				obj.put("bigc_data", objItems.toString());
+    				obj.put("productUrl", productUrl);
+    				redis.rpush("detailUrl", obj.toString());
+    				System.out.println(dateTimes.thaiDateTime() +" fetch ==> "+productUrl);
+    			}
+            }
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+		}			
 	}
 }

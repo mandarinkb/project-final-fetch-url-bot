@@ -81,7 +81,7 @@ public class Controller {
                 	checkStartUrl = false;
                 }
             }
-            // หาหมวดหมู่ของ url
+//            // หาหมวดหมู่ของ url
             while (checkCategorytUrl) {
             	String obj = redis.rpop("categoryUrl");
             	if (obj != null) {
@@ -92,6 +92,12 @@ public class Controller {
                     { 
                         case "tescolotus": 
                         	tescolotus.categoryUrlDetail(json.toString());
+                            break; 
+                        case "bigc": 
+                        	bigC.categoryUrlDetail(json.toString());
+                            break; 
+                        case "makroclick": 
+                        	makroclick.categoryUrlDetail(json.toString());
                             break; 
                         default: 
                             System.out.println("no match"); 
